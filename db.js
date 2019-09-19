@@ -33,6 +33,7 @@ const Offering = conn.define('offering', {
   price: DECIMAL
 })
 
+
 const syncAndSeed = async ()=>{
   await conn.sycn({force: true});
 }
