@@ -36,6 +36,25 @@ const Offering = conn.define('offering', {
 
 const syncAndSeed = async ()=>{
   await conn.sycn({force: true});
+  const products = [
+    {name:'bar', suggestedPrice: 5},
+    {name:'bazz', suggestedPrice: 9},
+    {name:'foo', suggestedPrice: 3},
+    {name:'quq', suggestedPrice: 3}
+  ]
+  const [bar, bazz, foo, quq] = await Promise.all(products.map(product => Product.create(product)))
+  const companies = [
+    {name: 'ACME US'},
+    {name: 'ACME GLOBAL'},
+    {name: 'ACME TRISTATE'}
+  ]
+  const [US, GLOBAL, TRISTATE] = await Promise.all(companies.map(company => Company.create(company)))
+  const offerings = [
+    {price: 2.9, productID: foo.id,companyID: US.id},
+    {price: 2.8, productID: foo.id,companyID: Global.id},
+    {price: 4.5, productID: bar.id,companyID: Global.id},
+    {price:  11, productID: bazz.id,companyID: TRISTATE.id},
+  ]
 }
 
 // syncAndSeed();
