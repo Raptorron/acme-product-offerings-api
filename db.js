@@ -17,7 +17,8 @@ const Product = conn.define('product', {
     type: DECIMAL
   }
 })
-const Company = conn.define('comapny', {
+
+const Company = conn.define('company', {
   id:{
     primaryKey: true,
     type: UUID,
@@ -33,9 +34,14 @@ const Offering = conn.define('offering', {
   price: DECIMAL
 })
 
+Offering.belongsTo(Product);
+Product.hasMany(Offering);
+
+Offering.belongsTo(Company);
+Company.hasMany(Offering)
 
 const syncAndSeed = async ()=>{
-  await conn.sycn({force: true});
+  await conn.sync({force: true});
   const products = [
     {name:'bar', suggestedPrice: 5},
     {name:'bazz', suggestedPrice: 9},
@@ -48,13 +54,25 @@ const syncAndSeed = async ()=>{
     {name: 'ACME GLOBAL'},
     {name: 'ACME TRISTATE'}
   ]
-  const [US, GLOBAL, TRISTATE] = await Promise.all(companies.map(company => Company.create(company)))
+  const [us, global, tristate] = await Promise.all(companies.map(company => Company.create(company)))
   const offerings = [
-    {price: 2.9, productID: foo.id,companyID: US.id},
-    {price: 2.8, productID: foo.id,companyID: Global.id},
-    {price: 4.5, productID: bar.id,companyID: Global.id},
-    {price:  11, productID: bazz.id,companyID: TRISTATE.id},
-  ]
+    {price: 2.9, productId: foo.id,companyId: us.id},
+    {price: 2.8, productId: foo.id,companyId: global.id},
+    {price: 4.5, productId: bar.id,companyId: global.id},
+    {price:  11, productId: bazz.id,companyId: tristate.id},
+  ];
+  const [offer1, offer2, offer3, offer4] = await Promise.all(offerings.map(offering => Offering.create(offering)))
+  console.log(offer1.get());
 }
 
-// syncAndSeed();
+
+
+module.exports={
+  syncAndSeed,
+  module: {
+    Product,
+    Company,
+    Offering
+  }
+}
+syncAndSeed();
